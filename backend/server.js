@@ -10,6 +10,7 @@ const adminDashboardRoutes = require('./routes/adminDashboardRoutes');
 const affiliateAuthRoutes = require('./routes/affiliateAuthRoutes');
 const affiliateDashboardRoutes = require('./routes/affiliateDashboardRoutes');
 const superAdminRoutes = require('./routes/superAdminRoutes');
+const voucherRoutes = require('./routes/voucherRoutes');
 
 
 // Utility imports
@@ -56,6 +57,7 @@ mongoose.connect(DB, {
 // Admin routes
 app.use('/api/admin/auth', adminAuthRoutes);
 app.use('/api/admin/dashboard', adminDashboardRoutes);
+app.use('/api/vouchers', voucherRoutes);
 
 // Affiliate routes
 app.use('/api/affiliate/auth', affiliateAuthRoutes);
