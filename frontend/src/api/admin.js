@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.PROD
-  ? 'https://referrals-qp8h.onrender.com/api/admin'
-  : '/api/admin';
+const API_URL = '/api/admin';
 
 export const adminAPI = axios.create({
   baseURL: API_URL,
@@ -11,36 +9,46 @@ export const adminAPI = axios.create({
   },
 });
 
-// Auth
-export const signupAdmin = (data) => adminAPI.post('/auth/signup', data);
-export const loginAdmin = (data) => adminAPI.post('/auth/login', data);
+// Auth endpoints
+export const signupAdmin = async (data) => {
+  return await adminAPI.post('/auth/signup', data);
+};
 
-// Protected
-export const getDashboardStats = (token) =>
-  adminAPI.get('/dashboard/stats', {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const loginAdmin = async (data) => {
+  return await adminAPI.post('/auth/login', data);
+};
 
-// Affiliates
-export const fetchPendingAffiliates = (token) =>
-  adminAPI.get('/affiliates/pending', {
-    headers: { Authorization: `Bearer ${token}` },
+// Protected endpoints
+export const getDashboardStats = async (token) => {
+  return await adminAPI.get('/dashboard/stats', {
+    headers: { Authorization: `Bearer ${token}` }
   });
+};
+
+export const fetchPendingAffiliates = (token) => {
+  return  adminAPI.get('/affiliates/pending', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+};
 
 export const approveAffiliate = (id, token) =>
-  adminAPI.put(`/affiliates/approve/${id}`, {}, {
+   adminAPI.put(`/affiliates/approve/${id}`, {}, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
 export const deleteAffiliate = (id, token) =>
-  adminAPI.delete(`/affiliates/remove/${id}`, {
+   adminAPI.delete(`/affiliates/remove/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-export const getAffiliateStats = (token) =>
-  adminAPI.get('/dashboard/affiliates', {
-    headers: { Authorization: `Bearer ${token}` },
+export const getAffiliateStats = async (token) => {
+  return await adminAPI.get('/dashboard/affiliates', {
+    headers: { Authorization: `Bearer ${token}` }
   });
+};
 
-export const getAffiliatesByAdmin = (adminId) =>
-  adminAPI.get(`/affiliates?adminId=${adminId}`);
+export const getAffiliatesByAdmin = async (adminId) => {
+  return await adminAPI.get(`/affiliates?adminId=${adminId}`);
+};

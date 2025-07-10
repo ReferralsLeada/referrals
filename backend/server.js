@@ -31,12 +31,9 @@ const app = express();
 
 // Middlewares
 app.use(cors({
-  origin: ['https://referrals.leada.in'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
-
 app.use(express.json({ limit: '10kb' }));
 
 if (process.env.NODE_ENV === 'development') {
@@ -49,7 +46,10 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 
-mongoose.connect(DB)
+mongoose.connect(DB, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
 .then(() => console.log('✅ DB connection successful!'))
 .catch(err => console.error('❌ DB connection error:', err));
 
