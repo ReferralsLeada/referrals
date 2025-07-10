@@ -62,7 +62,7 @@ app.use('/api/vouchers', voucherRoutes);
 // Affiliate routes
 app.use('/api/affiliate/auth', affiliateAuthRoutes);
 app.use('/api/affiliate/dashboard', affiliateDashboardRoutes);
-app.use('/api/admin', adminAuthRoutes);
+// app.use('/api/admin', adminAuthRoutes);
 // Super admin routes
 app.use('/api/super-admin', superAdminRoutes);
 
