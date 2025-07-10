@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 
 const voucherSchema = new mongoose.Schema({
   code: { type: String, required: true, unique: true },
-  affiliateId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   discountType: { type: String, enum: ['percentage', 'flat'], default: 'percentage' },
   discountValue: { type: Number, required: true },
   usageLimit: { type: Number, default: 100 },

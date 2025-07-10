@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { Menu, BarChart3, Link2, LogOut, LayoutDashboard, Zap, Users, Percent, TrendingUp } from 'lucide-react';
 import Navbar from '../../components/Navbar';
+import Voucher from './Voucher';
+
 
 export default function AffiliateDashboard() {
   const { user, role, logout } = useAuth();
@@ -50,6 +52,8 @@ export default function AffiliateDashboard() {
         return (
           <div className={contentStyles}>
             <Navbar />
+            <SidebarItem icon={<Zap />} label="Vouchers" collapsed={collapsed} onClick={() => setActiveTab('vouchers')} />
+
             
             <h2 className="text-2xl font-bold mb-6">Welcome {stats?.admin?.name}</h2>
             <div className="grid md:grid-cols-3 gap-6 mb-6">
@@ -152,6 +156,9 @@ export default function AffiliateDashboard() {
             </ul>
           </div>
         );
+        case 'vouchers':
+  return <Voucher />;
+
 
       case 'performance':
         return (
