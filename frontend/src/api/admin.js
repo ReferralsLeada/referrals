@@ -50,5 +50,12 @@ export const getAffiliateStats = async (token) => {
 };
 
 export const getAffiliatesByAdmin = async (adminId) => {
-  return await adminAPI.get(`/affiliates?adminId=${adminId}`);
+  return await adminAPI.get(`/dashboard/affiliates?adminId=${adminId}`);
 };
+
+export const fetchApprovedAffiliates = async (token) => {
+  return await adminAPI.get('/dashboard/affiliates/approved', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+

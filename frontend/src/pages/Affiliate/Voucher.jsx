@@ -22,7 +22,7 @@ export default function Voucher() {
 
   const fetchVouchers = async () => {
     try {
-      const res = await axios.get(`${baseUrl}/api/vouchers/my`, {
+      const res = await axios.get(`${baseUrl}/api/vouchers/my-vouchers`, {
         headers: { Authorization: `Bearer ${user.token}` }
       });
       setVouchers(res.data.data.vouchers);

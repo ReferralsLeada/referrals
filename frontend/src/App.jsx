@@ -4,6 +4,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminSignup from './pages/AdminSignup';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRouteAffiliate from './components/ProtectedRouteAffiliate';
 import VerificationSuccess from './pages/VerificationSuccess';
 import VerificationPage from './pages/VerificationPage';
 import AffiliateDashboard from './pages/Affiliate/Dashboard';
@@ -26,10 +27,15 @@ function App() {
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+         
         </Route>
+         
 
         {/* Affiliate routes */}
-        <Route path="/affiliate/dashboard" element={<AffiliateDashboard />} />
+        <Route element={<ProtectedRouteAffiliate />}>
+          <Route path="/affiliate/dashboard" element={<AffiliateDashboard />} />
+        </Route> 
+        
         <Route path="/affiliate/signup" element={<AffiliateSignup />} />
          <Route path="/affiliate/login" element={<AffiliateLogin />} />
         {/* Fallback */}

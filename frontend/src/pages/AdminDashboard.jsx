@@ -1,6 +1,10 @@
+//src/pages/AdminDashboard.jsx
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../context/AdminAuthContext';
+import { fetchApprovedAffiliates } from '../api/admin';
+
 import {
   getDashboardStats,
   fetchPendingAffiliates,
@@ -23,7 +27,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [affiliatesLoading, setAffiliatesLoading] = useState(true);
   const [error, setError] = useState('');
-
+  
   const adminList = ['Super Admin', 'Finance Admin', 'Operations Admin'];
 
   useEffect(() => {
@@ -55,6 +59,24 @@ export default function AdminDashboard() {
     loadAffiliates();
   }, [admin.token]);
 
+  const [approvedAffiliates, setApprovedAffiliates] = useState([]);
+  const [approvedLoading, setApprovedLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchApproved = async () => {
+      try {
+        const res = await fetchApprovedAffiliates(admin.token);
+        setApprovedAffiliates(res.data.data.affiliates);
+      } catch (err) {
+        console.error('Error loading approved affiliates:', err);
+      } finally {
+        setApprovedLoading(false);
+      }
+    };
+    fetchApproved();
+  }, [admin.token]);
+
+
   const handleApprove = async (id) => {
     try {
       await approveAffiliate(id, admin.token);
@@ -80,14 +102,15 @@ export default function AdminDashboard() {
     switch (activeTab) {
       case 'overview':
         return (
-          
+
           <div>
-            
+
             <h2 className="text-2xl font-bold text-green-500 mb-6">Overview</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-              <Card label="Total Affiliates" value="1,250" textColor="text-indigo-400" />
-              <Card label="Total Referrals" value="8,765" textColor="text-green-400" />
-              <Card label="Total Earnings" value="₹1,234,567" textColor="text-fuchsia-400" />
+              <Card label="Total Affiliates" value={stats?.totalAffiliates || 0} textColor="text-indigo-400" />
+              <Card label="Approved Affiliates" value={stats?.approvedAffiliates || 0} textColor="text-green-400" />
+              <Card label="Pending Affiliates" value={stats?.pendingAffiliates || 0} textColor="text-fuchsia-400" />
+
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <ChartCard title="Active Campaigns" />
@@ -95,10 +118,43 @@ export default function AdminDashboard() {
             </div>
           </div>
         );
+
+      case 'approved':
+        return (
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Approved Affiliates</h2>
+            {approvedLoading ? (
+              <p>Loading approved affiliates...</p>
+            ) : approvedAffiliates.length === 0 ? (
+              <p>No approved affiliates</p>
+            ) : (
+              <table className="w-full bg-white rounded-lg overflow-hidden shadow">
+                <thead className="bg-blue-100">
+                  <tr>
+                    <th className="text-left px-4 py-2">Name</th>
+                    <th className="text-left px-4 py-2">Email</th>
+                    <th className="text-left px-4 py-2">Referral ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {approvedAffiliates.map(a => (
+                    <tr key={a._id} className="border-t">
+                      <td className="px-4 py-2">{a.name}</td>
+                      <td className="px-4 py-2">{a.email}</td>
+                      <td className="px-4 py-2">{a.referralId || 'N/A'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        );
+
+
       case 'affiliates':
         return (
           <div>
-           
+
             <h2 className="text-xl font-semibold mb-4">Pending Affiliate Approvals</h2>
             {affiliatesLoading ? (
               <p>Loading affiliates...</p>
@@ -167,16 +223,23 @@ export default function AdminDashboard() {
         <NavItem icon={<UserPlus />} label="Affiliate Signup" active={activeTab === 'signup'} onClick={() => setActiveTab('signup')} />
         <NavItem icon={<Bell />} label="Notifications" active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} />
         <NavItem icon={<LogOut />} label="Logout" onClick={logout} />
+        <NavItem
+          icon={<Users />}
+          label="Affiliate List"
+          active={activeTab === 'approved'}
+          onClick={() => setActiveTab('approved')}
+        />
+
       </aside>
 
       <main className="flex-1 p-6">
         <div className="flex justify-between mb-6  bg-white p-4 ">
-        <div>
-            <Navbar/>
-            
-        </div>
+          <div>
+            <Navbar />
+
+          </div>
           <h1 className="text-2xl bg-white p-4  font-bold text-gray-800">Admin Dashboard</h1>
-           
+
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}

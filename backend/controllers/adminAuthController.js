@@ -205,6 +205,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 // ✅ Get All Pending Affiliates
+// ✅ Get list of pending affiliates (for Admin Panel)
 exports.getPendingAffiliates = catchAsync(async (req, res, next) => {
   const pending = await Affiliate.find({ isApproved: false });
 
@@ -213,6 +214,8 @@ exports.getPendingAffiliates = catchAsync(async (req, res, next) => {
     data: { affiliates: pending }
   });
 });
+
+
 
 // ✅ Approve Affiliate
 exports.approveAffiliate = catchAsync(async (req, res, next) => {

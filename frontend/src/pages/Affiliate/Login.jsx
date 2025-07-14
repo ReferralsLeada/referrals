@@ -22,9 +22,16 @@ const AffiliateLogin = () => {
     setLoading(true);
     setError('');
     try {
-      await login(formData.email, formData.password, 'affiliate');
+    const { userType } = await login(formData.email, formData.password, 'affiliate');
+
+    // ✅ Navigate based on the returned role
+    if (userType === 'affiliate') {
       navigate('/affiliate/dashboard');
-    } catch (err) {
+    } else {
+      navigate('/admin/dashboard');
+    }
+
+  } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);

@@ -39,22 +39,36 @@ export default function AffiliateSignup() {
 
     try {
       const response = await signupAffiliate(formData);
+        const newAffiliate = response.data.data.affiliate;
+
+    if (response.data?.token && response.data?.data?.affiliate?.isApproved) {
       const userData = {
-        ...response.data.data.affiliate,
+        ...newAffiliate,
         token: response.data.token
       };
-      localStorage.setItem('user', JSON.stringify(userData));
+
+       localStorage.setItem('user', JSON.stringify(userData));
       localStorage.setItem('role', 'affiliate');
       setUser(userData);
       setRole('affiliate');
+      setError('');
       navigate('/affiliate/dashboard');
-    } catch (err) {
-      console.error('Signup error:', err.response?.data || err.message);
-      setError(err.response?.data?.message || 'Signup failed');
-    } finally {
-      setLoading(false);
+    } else {
+      
+      // ✅ Show alert and stop navigation
+       setError('');
+      alert('Your request has been sent to the admin. Please wait for approval.');
+      navigate('/affiliate/login');
     }
-  };
+
+  } catch (err) {
+    console.error('Signup error:', err.response?.data || err.message);
+     setError(err.response?.data?.message || 'Signup pending for admin approve Login after some times');
+    // alert('Your request has been sent to the admin. Please wait for approval.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className={`${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'} min-h-screen`}>

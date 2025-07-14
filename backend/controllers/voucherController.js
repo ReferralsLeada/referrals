@@ -1,6 +1,7 @@
 const Voucher = require('../models/Voucher');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const axios = require('axios');
 
 /**
  * @desc    Create referral voucher by affiliate
@@ -31,13 +32,63 @@ exports.createVoucher = catchAsync(async (req, res, next) => {
     return next(new AppError('Voucher code already exists.', 400));
   }
 
+  try {
+    const shop = process.env.SHOPIFY_STORE_DOMAIN;
+    const token = process.env.SHOPIFY_ADMIN_API_TOKEN;
+
+    // Create Price Rule
+    const priceRuleRes = await axios.post(
+      `https://${shop}/admin/api/2023-07/price_rules.json`,
+      {
+        price_rule: {
+          title: code,
+          target_type: 'line_item',
+          target_selection: 'all',
+          allocation_method: 'across',
+          value_type: discountType === 'percentage' ? 'percentage' : 'fixed_amount',
+          value: `-${discountValue}`,
+          customer_selection: 'all',
+          usage_limit: usageLimit,
+          starts_at: new Date().toISOString(),
+          ends_at: new Date(expiresAt).toISOString()
+        }
+      },
+      {
+        headers: {
+          'X-Shopify-Access-Token': token,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const ruleId = priceRuleRes.data.price_rule.id;
+
+    // Create Discount Code
+    await axios.post(
+      `https://${shop}/admin/api/2023-07/price_rules/${ruleId}/discount_codes.json`,
+      { discount_code: { code } },
+      {
+        headers: {
+          'X-Shopify-Access-Token': token,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    console.log('🛒 [Shopify] Discount synced successfully');
+  } catch (err) {
+    console.error('❌ [Shopify Sync Failed]', err.response?.data || err.message);
+    return next(new AppError('Failed to sync voucher to Shopify.', 500));
+  }
+
   console.log('✅ [createVoucher] Creating new voucher...');
   const voucher = await Voucher.create({
     code,
     discountType,
     discountValue,
     usageLimit,
-    expiresAt
+    expiresAt,
+    
   });
 
   console.log('🎉 [createVoucher] Voucher successfully created:', voucher);
@@ -87,7 +138,7 @@ exports.trackClick = catchAsync(async (req, res, next) => {
 exports.getMyVouchers = catchAsync(async (req, res, next) => {
   console.log('📥 [getMyVouchers] Request from user:', req.user?._id);
 
-  const vouchers = await Voucher.find({ affiliateId: req.user._id }).sort({ createdAt: -1 });
+const vouchers = await Voucher.find({ affiliateId: req.user._id }).sort({ createdAt: -1 });
   console.log(`📦 [getMyVouchers] Found ${vouchers.length} vouchers`);
 
   res.status(200).json({

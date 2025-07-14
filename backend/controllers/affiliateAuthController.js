@@ -49,21 +49,22 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm,
     role: 'affiliate',
     adminId,
-    isApproved: true // pending approval
+    isApproved: false // pending approval
   });
 
     const token = signToken(newAffiliate._id);
 
   res.status(201).json({
     status: 'Success',
-     token,
-    data: {
-      affiliate: {
-        id: newAffiliate._id,
-        name: newAffiliate.name,
-        email: newAffiliate.email,
-      }
-    }
+    message: 'Signup successful. Your account is pending admin approval.'
+    //  token,
+    // data: {
+    //   // affiliate: {
+    //   //   id: newAffiliate._id,
+    //   //   name: newAffiliate.name,
+    //   //   email: newAffiliate.email,
+    //   // }
+    // }
   });
 });
 

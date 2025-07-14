@@ -9,6 +9,7 @@ const voucherSchema = new mongoose.Schema({
   usageLimit: { type: Number, default: 100 },
   clicks: { type: Number, default: 0 },
   expiresAt: { type: Date, required: true }
+  
 }, { timestamps: true });
 
 module.exports = mongoose.model('Voucher', voucherSchema);
